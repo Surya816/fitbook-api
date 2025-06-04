@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Class Booking</title>
+  <style>
+    :root {
+      --primary-color: #4285f4;
+      --primary-dark: #3367d6;
+      --secondary-color: #34a853;
+      --accent-color: #ea4335;
+      --light-gray: #f5f5f5;
+      --medium-gray: #e0e0e0;
+      --dark-gray: #757575;
+      --text-color: #202124;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--light-gray);
+      padding: 20px;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto 30px;
+    }
+
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 30px;
+    }
+
+    @media (min-width: 992px) {
+      .content-container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .left-column {
+      flex: 1;
+    }
+
+    .right-column {
+      flex: 1;
+    }
+
+    @media (min-width: 992px) {
+      .left-column {
+        flex: 1.5;
+        margin-right: 30px;
+      }
+      .right-column {
+        flex: 1;
+      }
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .header-description {
+      font-size: 1.2rem;
+      color: var(--dark-gray);
+    }
+
+    h2 {
+      color: var(--primary-dark);
+      font-size: 1.8rem;
+      margin: 0 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--medium-gray);
+    }
+
+    .section {
+      background-color: var(--white);
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--dark-gray);
+    }
+
+    input {
+      padding: 12px 15px;
+      border: 1px solid var(--medium-gray);
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      padding: 14px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card strong {
+      color: var(--text-color);
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .card em {
+      color: var(--dark-gray);
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    .card .meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+    }
+
+    .card .id-badge {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin: 15px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: rgba(52, 168, 83, 0.1);
+      color: var(--secondary-color);
+      border: 1px solid var(--secondary-color);
+    }
+
+    .error {
+      background-color: rgba(234, 67, 53, 0.1);
+      color: var(--accent-color);
+      border: 1px solid var(--accent-color);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: var(--dark-gray);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--medium-gray);
+      margin-bottom: 15px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <header>
+      <h1>Fitness Class Booking</h1>
+      <p class="header-description">Book your favorite classes with top instructors</p>
+    </header>
+  </div>
+
+  <div class="content-container">
+    <div class="left-column">
+      <section class="section">
+        <h2>Available Classes</h2>
+        <div id="classes">
+          <div class="card">
+            <strong>Test Yoga</strong>
+            <em>Instructor: Test Instructor</em>
+            <div class="meta">
+              <span>6/5/2025, 9:08:34 PM</span>
+              <span>Slots: 0</span>
+            </div>
+            <div class="meta">
+              <span></span>
+              <span class="id-badge">ID: 1</span>
+            </div>
+          </div>
+          <div class="card">
+            <strong>Yoga</strong>
+            <em>Instructor: Aarav Mehta</em>
+            <div class="meta">
+              <span>6/6/2025, 3:09:08 AM</span>
+              <span>Slots: 9</span>
+            </div>
+            <div class="meta">
+              <span></span>
+              <span class="id-badge">ID: 2</span>
+            </div>
+          </div>
+          <div class="card">
+            <strong>Zumba</strong>
+            <em>Instructor: Maya Rao</em>
+            <div class="meta">
+              <span>6/6/2025, 6:09:08 AM</span>
+              <span>Slots: 8</span>
+            </div>
+            <div class="meta">
+              <span></span>
+              <span class="id-badge">ID: 3</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="right-column">
+      <section class="section">
+        <h2>Book a Class</h2>
+        <form id="bookForm">
+          <div class="form-group">
+            <label for="class_id">Class ID</label>
+            <input type="number" id="class_id" required placeholder="Enter class ID" value="2">
+          </div>
+          <div class="form-group">
+            <label for="client_name">Your Name</label>
+            <input type="text" id="client_name" required placeholder="Your full name" value="surya">
+          </div>
+          <div class="form-group">
+            <label for="client_email">Your Email</label>
+            <input type="email" id="client_email" required placeholder="your@email.com" value="surya@gmail.com">
+          </div>
+          <div class="form-group">
+            <button type="submit">BOOK CLASS</button>
+          </div>
+          <div id="bookMsg" class="message"></div>
+        </form>
+      </section>
+
+      <section class="section">
+        <h2>Check Your Bookings</h2>
+        <form id="lookupForm">
+          <div class="form-group">
+            <label for="lookup_email">Email</label>
+            <input type="email" id="lookup_email" required placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <button type="submit">View Bookings</button>
+          </div>
+        </form>
+        <div id="bookings"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost:5000";
+
+    async function fetchClasses() {
+      try {
+        const res = await fetch(`${apiBase}/classes`);
+        const data = await res.json();
+        const container = document.getElementById("classes");
+        
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i>🏋️‍♀️</i>
+              <p>No classes available at the moment. Please check back later.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        container.innerHTML = "";
+        data.forEach(cls => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <strong>${cls.name}</strong>
+            <em>Instructor: ${cls.instructor}</em>
+            <div class="meta">
+              <span>${new Date(cls.datetime).toLocaleString()}</span>
+              <span>Slots: ${cls.available_slots}</span>
+            </div>
+            <div class="meta">
+              <span></span>
+              <span class="id-badge">ID: ${cls.id}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    }
+
+    document.getElementById("bookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msgDiv = document.getElementById("bookMsg");
+      msgDiv.className = '';
+      msgDiv.innerText = '';
+
+      try {
+        const payload = {
+          class_id: parseInt(document.getElementById("class_id").value),
+          client_name: document.getElementById("client_name").value,
+          client_email: document.getElementById("client_email").value
+        };
+        
+        const res = await fetch(`${apiBase}/book`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
+        if (res.status === 201) {
+          msgDiv.className = "success";
+          msgDiv.innerText = "✓ " + result.message;
+        } else {
+          msgDiv.className = "error";
+          msgDiv.innerText = "✗ " + (result.error || "Failed to book class");
+        }
+        
+        // Reset form and refresh classes
+        document.getElementById("class_id").value = "";
+        fetchClasses();
+      } catch (error) {
+        msgDiv.className = "error";
+        msgDiv.innerText = "✗ Network error. Please try again.";
+        console.error("Booking error:", error);
+      }
+    });
+
+    document.getElementById("lookupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("lookup_email").value;
+      const container = document.getElementById("bookings");
+      
+      try {
+        const res = await fetch(`${apiBase}/bookings?email=${email}`);
+        const data = await res.json();
+        
+        container.innerHTML = "";
+        
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i>📅</i>
+              <p>No bookings found for ${email}.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        data.forEach(b => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <strong>${b.class_name}</strong>
+            <em>Instructor: ${b.instructor}</em>
+            <div class="meta">
+              <span>${new Date(b.datetime).toLocaleString()}</span>
+            </div>
+            <div class="meta">
+              <span>Booked by: ${b.client_name}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        container.innerHTML = `
+          <div class="error message">
+            Failed to load bookings. Please try again.
+          </div>
+        `;
+        console.error("Lookup error:", error);
+      }
+    });
+
+    // Load class list on page load
+    fetchClasses();
+  </script>
+</body>
+</html>
