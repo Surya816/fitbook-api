@@ -252,6 +252,13 @@
     <div class="left-column">
       <section class="section">
         <h2>Available Classes</h2>
+        <div style="margin-bottom: 15px;">
+            <label for="filter_date">Filter by Date:</label>
+            <input type="date" id="filter_date" />
+            <button onclick="fetchClassesByDate()">Apply</button>
+            <button onclick="fetchClasses()">Clear</button>
+        </div>
+
         <div id="classes">
           <div class="card">
             <strong>Test Yoga</strong>
@@ -335,44 +342,137 @@
   <script>
     const apiBase = "http://localhost:5000";
 
-    async function fetchClasses() {
-      try {
-        const res = await fetch(`${apiBase}/classes`);
-        const data = await res.json();
-        const container = document.getElementById("classes");
-        
-        if (data.length === 0) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <i>🏋️‍♀️</i>
-              <p>No classes available at the moment. Please check back later.</p>
-            </div>
-          `;
-          return;
-        }
-        
-        container.innerHTML = "";
-        data.forEach(cls => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <strong>${cls.name}</strong>
-            <em>Instructor: ${cls.instructor}</em>
-            <div class="meta">
-              <span>${new Date(cls.datetime).toLocaleString()}</span>
-              <span>Slots: ${cls.available_slots}</span>
-            </div>
-            <div class="meta">
-              <span></span>
-              <span class="id-badge">ID: ${cls.id}</span>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      } catch (error) {
-        console.error("Error fetching classes:", error);
-      }
+async function fetchClasses() {
+  const dateInputElem = document.getElementById("filter_date");
+  const dateInput = dateInputElem.value;
+  const container = document.getElementById("classes");
+
+  // Clear the input *before* the fetch
+  dateInputElem.value = "";
+
+  let url = `${apiBase}/classes`;
+
+  if (dateInput) {
+    const istDateStr = getISTDateString(dateInput);
+    url += `?date=${istDateStr}`;
+  }
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i>🏋️‍♀️</i>
+          <p>No classes available${dateInput ? ' on ' + dateInput : ''}.</p>
+        </div>
+      `;
+      return;
     }
+
+    data.forEach(cls => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <strong>${cls.name}</strong>
+        <em>Instructor: ${cls.instructor}</em>
+        <div class="meta">
+          <span>${new Date(cls.datetime).toLocaleString()}</span>
+          <span>Slots: ${cls.available_slots}</span>
+        </div>
+        <div class="meta">
+          <span></span>
+          <span class="id-badge">ID: ${cls.id}</span>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  } catch (error) {
+    console.error("Error fetching classes:", error);
+    container.innerHTML = `
+      <div class="error message">
+        Failed to load classes. Please try again.
+      </div>
+    `;
+  }
+}
+
+
+
+    function getISTDateString(localDateStr) {
+  const localDate = new Date(localDateStr);
+  // Add 5.5 hours to convert to IST
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istDate = new Date(localDate.getTime() + istOffset);
+
+  // Format to YYYY-MM-DD (in IST)
+  const year = istDate.getFullYear();
+  const month = String(istDate.getMonth() + 1).padStart(2, '0');
+  const day = String(istDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+
+    async function fetchClassesByDate() {
+  const dateInputElem = document.getElementById("filter_date");
+  const date = dateInputElem.value;
+
+  // If no date is selected, clear the input and fetch all
+  if (!date) {
+    await fetchClasses();  // fetches all classes
+    return;
+  }
+
+  // Convert to IST format for backend filtering
+  const istDateStr = getISTDateString(date);
+
+  try {
+    const res = await fetch(`${apiBase}/classes?date=${istDateStr}`);
+    const data = await res.json();
+    const container = document.getElementById("classes");
+
+    container.innerHTML = "";
+
+    if (data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i>🏋️‍♀️</i>
+          <p>No classes available on ${date}.</p>
+        </div>
+      `;
+      return;
+    }
+
+    data.forEach(cls => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <strong>${cls.name}</strong>
+        <em>Instructor: ${cls.instructor}</em>
+        <div class="meta">
+          <span>${new Date(cls.datetime).toLocaleString()}</span>
+          <span>Slots: ${cls.available_slots}</span>
+        </div>
+        <div class="meta">
+          <span></span>
+          <span class="id-badge">ID: ${cls.id}</span>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    // ✅ Clear the input only after successful render
+    dateInputElem.value = "";
+
+  } catch (error) {
+    console.error("Date filter error:", error);
+  }
+}
+
+
 
     document.getElementById("bookForm").addEventListener("submit", async (e) => {
       e.preventDefault();

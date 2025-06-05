@@ -63,3 +63,24 @@ You should see:
 
 ### 7. Visit the app in your browser 
 http://localhost:5000
+
+
+### 8. Sample API Requests (via cURL)
+View all upcoming classes
+```bash
+curl http://localhost:5000/classes
+```
+Filter classes by specific date (IST)
+```bash
+curl http://localhost:5000/classes?date=2025-06-07
+```
+Book a class
+```bash
+curl -X POST http://localhost:5000/book \
+  -H "Content-Type: application/json" \
+  -d '{"class_id": 1, "client_name": "Alice", "client_email": "alice@example.com"}'
+```
+Lookup bookings by email
+```bash
+curl http://localhost:5000/bookings?email=alice@example.com
+```
